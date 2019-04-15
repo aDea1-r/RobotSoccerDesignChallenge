@@ -1,3 +1,5 @@
+#pragma config(Sensor, in7,    sonar,          sensorAnalog)
+#pragma config(Sensor, in8,    encoder,        sensorAnalog)
 #pragma config(Sensor, dgtl12, LED,            sensorLEDtoVCC)
 #pragma config(Motor,  port1,            ,             tmotorVex393_HBridge, openLoop)
 #pragma config(Motor,  port2,           leftMotor,     tmotorVex393_MC29, openLoop)
