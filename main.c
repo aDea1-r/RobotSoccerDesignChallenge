@@ -1,5 +1,4 @@
-#pragma config(Sensor, in7,    sonar,          sensorAnalog)
-#pragma config(Sensor, in8,    encoder,        sensorAnalog)
+#pragma config(Sensor, dgtl4,  encoder,        sensorQuadEncoder)
 #pragma config(Sensor, dgtl12, LED,            sensorLEDtoVCC)
 #pragma config(Motor,  port1,            ,             tmotorVex393_HBridge, openLoop)
 #pragma config(Motor,  port2,           leftMotor,     tmotorVex393_MC29, openLoop)
@@ -46,6 +45,16 @@ void manageGate()
 	}
 }
 
+void openGate() {
+	gateOpen = true;
+	setServo(gate,-127);
+}
+
+void closeGate() {
+	gateOpen = false;
+	setServo(gate,127);
+}
+
 bool Btn7LPressed = false;
 
 void reverseDirection()
@@ -84,9 +93,50 @@ void claw()
 	}
 }
 
+void moveForward(int distance) {
+	SensorValue[encoder] = 0;
+	int enc = SensorValue[encoder]*-1;
+	while(enc<distance) {
+		enc = SensorValue[encoder]*-1;
+		motor[rightMotor] = 128;
+		motor[leftMotor] = 128;
+		//writeDebugStreamLine("Moving Forward a total of %d, current progress is %d",distance,enc);
+	}
+	motor[rightMotor] = 0;
+	motor[leftMotor] = 0;
+}
+
+void turnRight(int angle) {
+	SensorValue[encoder] = 0;
+	int enc = SensorValue[encoder]*-1;
+	while(enc<angle) {
+		enc = SensorValue[encoder]*-1;
+		motor[rightMotor] = -128;
+		motor[leftMotor] = 128;
+		//writeDebugStreamLine("Turning Right a total of %d, current progress is %d",distance,enc);
+	}
+	motor[rightMotor] = 0;
+	motor[leftMotor] = 0;
+}
+
+void auto() {
+	openGate();
+	moveForward(1000);
+	turnRight(50);
+	moveForward(1000);
+	closeGate();
+}
+
+void checkAuto() {
+	if(vexRT[Btn8U] == 1) {
+		auto();
+	}
+}
+
 task main()
 {
 	while(true) {
+		checkAuto();
 		moveWheels();
 		manageGate();
 		reverseDirection();
